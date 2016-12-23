@@ -17,8 +17,6 @@ var path = require('path');
 // Static Files
 app.use('/', express.static('.'));
 
-
-
 app.listen(3000, function () {
   console.log('App listening on port 3000!')
 })
