@@ -1,26 +1,7 @@
 // App Setup
 (function(){
 	$(document).ready(function() {
-		// You'll need the action manager for the store to accept four arguments.
-		// action: a string representing the action that has been dispatched to the store.
-		// data: data associated with the action being dispatched.
-		// notify: a function that must be called if the state is mutated.
-		// state: the data in the store that can be mutated.
-		var myManager = function(action, data, notify, state){
-			console.log("Handling action name: " + action);
-	    	switch(action){
-	    		case "hello":
-	    			state.count++;
-	    			notify(); // state has been mutated, alert the views!
-	    			break;
-	    		case "world":
-	    			state.count--;
-	    			notify(); // state has been mutated, alert the views!
-	    			break;
-	    	}
-	    };
-	    var initialState = { 'count': 0 }
-	    plux.createStore("shared", myManager, initialState);
+		actions.initialize();
 	});
 })();
 
@@ -66,5 +47,16 @@
 	    });
 	    // Initialize the view.
 	    updateValues();
+	});
+})();
+
+
+// Reset Element
+(function(){
+	$(document).ready(function() {
+    	// Let's wire up the button to trigger an action to the dispatcher.
+	    $("#reset").click(function(){
+	    	actions.initialize();
+	    });
 	});
 })();
