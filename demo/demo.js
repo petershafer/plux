@@ -8,12 +8,12 @@
         });
         // We need to do this to initialize the view, and update it.
         function updateValues(){
-            console.log("Updating values for HELLO element");
-            $("#helloCount").text(actions.getCount());
+            console.log("Updating values for INC element");
+            $("#incCount").text(actions.getCount());
         }
         // Let's wire up the button to trigger an action to the dispatcher.
-        $("#hello button").click(function(){
-            actions.helloAction();
+        $("#inc button").click(function(){
+            actions.increment();
         });
         // Initialize the view.
         updateValues();
@@ -31,12 +31,12 @@
         });
         // We need to do this to initialize the view, and update it.
         function updateValues(){
-            console.log("Updating values for WORLD element");
-            $("#worldCount").text(actions.getCount());
+            console.log("Updating values for DEC element");
+            $("#decCount").text(actions.getCount());
         }
         // Let's wire up the button to trigger an action to the dispatcher.
-        $("#world button").click(function(){
-            actions.worldAction();
+        $("#dec button").click(function(){
+            actions.decrement();
         });
         // Initialize the view.
         updateValues();

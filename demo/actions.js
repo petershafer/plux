@@ -2,8 +2,8 @@
 var actions = (function(){
     var API = {
         'initialize': plux.registerAction("initialize"),
-        'helloAction': plux.registerAction("hello"),
-        'worldAction': plux.registerAction("world"),
+        'increment': plux.registerAction("increment"),
+        'decrement': plux.registerAction("decrement"),
         'getCount': plux.registerAction("getCount")
     };
     return API;

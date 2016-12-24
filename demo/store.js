@@ -8,11 +8,11 @@
                 return;
             case "getCount":
                 return state.count;
-            case "hello":
+            case "increment":
                 state.count++;
                 notify(); // state has been mutated, alert the views!
                 return;
-            case "world":
+            case "decrement":
                 state.count--;
                 notify(); // state has been mutated, alert the views!
                 return;
