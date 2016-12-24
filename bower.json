@@ -1,0 +1,11 @@
+{
+  "name": "plux",
+  "homepage": "https://github.com/petershafer/plux",
+  "authors": [
+    "Peter Shafer"
+  ],
+  "description": "A very simple flux implementation",
+  "main": "src/plux.js",
+  "license": "MIT",
+  "version": "0.0.1"
+}
