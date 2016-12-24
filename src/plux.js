@@ -61,7 +61,7 @@ var plux = (function(){
             // returns callable function
             return (function(data){
                 return dispatch(name, data);
-            }).bind(this);
+            });
         }
     }
     return API;
