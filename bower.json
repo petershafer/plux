@@ -6,6 +6,5 @@
   ],
   "description": "A very simple flux implementation",
   "main": "src/plux.js",
-  "license": "MIT",
-  "version": "0.0.1"
+  "license": "MIT"
 }
