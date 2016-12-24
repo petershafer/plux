@@ -1,16 +1,15 @@
 {
   "name": "plux",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A simple flux implementation.",
   "main": "src/plux.js",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "express": "^4.14.0",
-    "path": "^0.12.7"
   },
-  "devDependencies": {},
   "scripts": {
     "test": ""
   },
-  "author": "",
+  "author": "Peter Shafer",
   "license": "ISC"
 }

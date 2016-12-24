@@ -2,6 +2,7 @@
 // https://github.com/facebook/flux/tree/master/examples/flux-concepts
 var plux = (function(){
     var stores = []; // Contains references to all stores.
+    var noop = function(){};
     var dispatch = function(action, data){
         var responses = []; // in case multiple stores respond.
         var i = 0; // count the number of responses.
@@ -49,6 +50,11 @@ var plux = (function(){
         // Subscribe to listen to any changes that affect a view.
         'registerView': function(storeName, subscriber){
             stores[storeName].subscriptions.push(subscriber);
+            return stores[storeName].subscriptions.length;
+        },
+        // Subscribe to listen to any changes that affect a view.
+        'unregisterView': function(storeName, id){
+            stores[storeName].subscriptions[id] = noop;
         },
         // Register an action that's available for views to trigger.
         'registerAction': function(name){
