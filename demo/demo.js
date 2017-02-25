@@ -9,7 +9,7 @@
         // We need to do this to initialize the view, and update it.
         function updateValues(){
             console.log("Updating values for INC element");
-            $("#incCount").text(actions.getCount());
+            $("#incCount").text(plux.getState("shared").count);
         }
         // Let's wire up the button to trigger an action to the dispatcher.
         $("#inc button").click(function(){
@@ -32,7 +32,7 @@
         // We need to do this to initialize the view, and update it.
         function updateValues(){
             console.log("Updating values for DEC element");
-            $("#decCount").text(actions.getCount());
+            $("#decCount").text(plux.getState("shared").count);
         }
         // Let's wire up the button to trigger an action to the dispatcher.
         $("#dec button").click(function(){

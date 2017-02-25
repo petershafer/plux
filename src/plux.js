@@ -4,9 +4,6 @@ var plux = (function(){
     var stores = []; // Contains references to all stores.
     var noop = function(){};
     var dispatch = function(action, data){
-        var responses = []; // in case multiple stores respond.
-        var i = 0; // count the number of responses.
-        var lastResponse; // reference to last response in case it's just one.
         // Iterate through all registered stores to dispatch the action.
         for(storeID in stores){
             var store = stores[storeID];
@@ -14,24 +11,10 @@ var plux = (function(){
             var response = store.handleAction(
                 action, 
                 data, 
-                function(){ store.notify(store.subscriptions) }, 
                 store.state
             );
-            // Determine if there's any response and store it.
-            if(response || response === 0){
-                responses[storeID] = response;
-                lastResponse = response;
-                i++;
-            }
+            store.notify(store.subscriptions);
         };
-        // Tailor the return value based on the number of responses.
-        if(i == 1){
-            return lastResponse;
-        }else if(i == 0){
-            return null;
-        }else{
-            return responses;
-        }
     }
     var API = {
         // Register a store with plux to receive actions and manage state.
@@ -62,6 +45,10 @@ var plux = (function(){
             return (function(data){
                 return dispatch(name, data);
             });
+        },
+        // Allow retrieval of state of specified store
+        'getState': function(name){
+            return Object.assign({}, (stores[name] ? stores[name].state : {}));
         }
     }
     return API;
