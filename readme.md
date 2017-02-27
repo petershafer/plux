@@ -1,5 +1,5 @@
 npm install
 
-node dev.js
+npm start
 
 open browser to http://localhost:3000/demo

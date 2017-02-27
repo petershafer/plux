@@ -5,10 +5,10 @@
   "main": "src/plux.js",
   "dependencies": {},
   "devDependencies": {
-    "express": "^4.14.0",
+    "express": "^4.14.0"
   },
   "scripts": {
-    "test": ""
+    "start": "node dev.js"
   },
   "author": "Peter Shafer",
   "license": "ISC"
