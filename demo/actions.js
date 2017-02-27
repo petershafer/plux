@@ -1,10 +1,10 @@
 // A sample actions file.
 var actions = (function(){
     var API = {
-        'initialize': plux.registerAction("initialize"),
-        'increment': plux.registerAction("increment"),
-        'decrement': plux.registerAction("decrement"),
-        'getCount': plux.registerAction("getCount")
+        'initialize': plux.createAction("initialize"),
+        'increment': plux.createAction("increment"),
+        'decrement': plux.createAction("decrement"),
+        'getCount': plux.createAction("getCount")
     };
     return API;
 })();

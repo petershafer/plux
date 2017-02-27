@@ -3,12 +3,11 @@
     $(document).ready(function() {
         // We need to get the shared store and tell it how it should
         // notify us when mutations to the state have occurred.
-        plux.registerView("shared", function(){
+        plux.subscribe("shared", function(){
             updateValues();
         });
         // We need to do this to initialize the view, and update it.
         function updateValues(){
-            console.log("Updating values for INC element");
             $("#incCount").text(plux.getState("shared").count);
         }
         // Let's wire up the button to trigger an action to the dispatcher.
@@ -26,12 +25,11 @@
         // We need to get the shared store and tell it how it should
         // notify us when mutations to the state have occurred.
         // This is the same store as used by the hello element.
-        plux.registerView("shared", function(){
+        plux.subscribe("shared", function(){
             updateValues();
         });
         // We need to do this to initialize the view, and update it.
         function updateValues(){
-            console.log("Updating values for DEC element");
             $("#decCount").text(plux.getState("shared").count);
         }
         // Let's wire up the button to trigger an action to the dispatcher.

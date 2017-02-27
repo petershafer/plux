@@ -8,7 +8,7 @@ var plux = (function(){
         for(storeID in stores){
             var store = stores[storeID];
             // Handle the action and trigger any mutations.
-            var response = store.handleAction(
+            store.handleAction(
                 action, 
                 data, 
                 store.state
@@ -19,7 +19,7 @@ var plux = (function(){
     var API = {
         // Register a store with plux to receive actions and manage state.
         'createStore': function(name, actionHandler, initial){
-            stores[name] = {
+            stores[name] = stores[name] || {
                 'state': initial || {},
                 'handleAction': actionHandler,
                 'notify': function(subscriptions){
@@ -31,17 +31,17 @@ var plux = (function(){
             };
         },
         // Subscribe to listen to any changes that affect a view.
-        'registerView': function(storeName, subscriber){
+        'subscribe': function(storeName, subscriber){
             stores[storeName].subscriptions.push(subscriber);
             return stores[storeName].subscriptions.length;
         },
         // Subscribe to listen to any changes that affect a view.
-        'unregisterView': function(storeName, id){
+        'unsibscribe': function(storeName, id){
             stores[storeName].subscriptions[id] = noop;
         },
         // Register an action that's available for views to trigger.
-        'registerAction': function(name){
-            // returns callable function
+        'createAction': function(name){
+            // returns callable function that is detacted from Plux API.
             return (function(data){
                 return dispatch(name, data);
             });
