@@ -15,7 +15,10 @@ var plux = (function(){
             );
             store.notify(store.subscriptions);
         };
-    }
+    };
+    var unsubscribe = function(storeName, id){
+        stores[storeName].subscriptions[id] = noop;
+    };
     var API = {
         // Register a store with plux to receive actions and manage state.
         'createStore': function(name, actionHandler, initial){
@@ -23,8 +26,9 @@ var plux = (function(){
                 'state': initial || {},
                 'handleAction': actionHandler,
                 'notify': function(subscriptions){
+                    var store = this;
                     this.subscriptions.forEach(function(subscription){
-                        subscription();
+                        subscription(Object.assign({}, store.state));
                     });
                 },
                 'subscriptions': []
@@ -32,16 +36,20 @@ var plux = (function(){
         },
         // Subscribe to listen to any changes that affect a view.
         'subscribe': function(storeName, subscriber){
+            var subid = stores[storeName].subscriptions.length;
             stores[storeName].subscriptions.push(subscriber);
-            return stores[storeName].subscriptions.length;
-        },
-        // Subscribe to listen to any changes that affect a view.
-        'unsubscribe': function(storeName, id){
-            stores[storeName].subscriptions[id] = noop;
+            return {
+                "unsubscribe": (function(){
+                    unsubscribe(storeName, subid);
+                }),
+                "id": subid,
+                "store": storeName
+            }
+            ;
         },
         // Register an action that's available for views to trigger.
         'createAction': function(name){
-            // returns callable function that is detacted from Plux API.
+            // returns callable function that is detached from Plux API.
             return (function(data){
                 return dispatch(name, data);
             });
