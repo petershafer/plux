@@ -36,7 +36,7 @@ var plux = (function(){
             return stores[storeName].subscriptions.length;
         },
         // Subscribe to listen to any changes that affect a view.
-        'unsibscribe': function(storeName, id){
+        'unsubscribe': function(storeName, id){
             stores[storeName].subscriptions[id] = noop;
         },
         // Register an action that's available for views to trigger.
