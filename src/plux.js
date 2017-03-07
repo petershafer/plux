@@ -38,6 +38,7 @@ var plux = (function(){
         'subscribe': function(storeName, subscriber){
             var subid = stores[storeName].subscriptions.length;
             stores[storeName].subscriptions.push(subscriber);
+            subscriber(stores[storeName].state);
             return {
                 "unsubscribe": (function(){
                     unsubscribe(storeName, subid);

@@ -14,8 +14,6 @@
         $("#inc button").click(function(){
             actions.increment();
         });
-        // Initialize the view.
-        updateValues();
     });
 })();
 
@@ -36,8 +34,6 @@
         $("#dec button").click(function(){
             actions.decrement();
         });
-        // Initialize the view.
-        updateValues();
     });
 })();
 
