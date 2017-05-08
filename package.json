@@ -2,13 +2,15 @@
   "name": "plux",
   "version": "0.0.1",
   "description": "A simple flux implementation.",
-  "main": "src/plux.js",
+  "main": "build/plux.js",
   "dependencies": {},
   "devDependencies": {
-    "express": "^4.14.0"
+    "express": "^4.14.0",
+    "browserify": "^14.3.0"
   },
   "scripts": {
-    "start": "node dev.js"
+    "start": "node dev.js",
+    "build": "browserify index.js --standalone plux -o plux.js"
   },
   "author": "Peter Shafer",
   "license": "ISC"
