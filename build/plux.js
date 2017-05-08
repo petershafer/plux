@@ -36,13 +36,14 @@
         stores[name] = stores[name] || {
           'state': initial || {},
           'handleAction': actionHandler,
+          'subscriptions': [],
           'notify': function notify(subscriptions) {
-            var store = this;
+            var _this = this;
+
             this.subscriptions.forEach(function (subscription) {
-              subscription(Object.assign({}, store.state));
+              return subscription(Object.assign({}, _this.state));
             });
-          },
-          'subscriptions': []
+          }
         };
       },
       // Subscribe to listen to any changes that affect a view.

@@ -1,9 +1,9 @@
 "use strict";
 // Based on description here:
 // https://github.com/facebook/flux/tree/master/examples/flux-concepts
-var plux = (function(){
+const plux = (() => {
   const stores = []; // Contains references to all stores.
-  const noop = function(){};
+  const noop = () => {};
   const dispatch = (action, data) => {
     // Iterate through all registered stores to dispatch the action.
     for(let storeID in stores){
@@ -20,17 +20,14 @@ var plux = (function(){
   const unsubscribe = (storeName, id) => stores[storeName].subscriptions[id] = noop;
   const API = {
     // Register a store with plux to receive actions and manage state.
-    'createStore': function(name, actionHandler, initial){
+    'createStore': (name, actionHandler, initial) => {
       stores[name] = stores[name] || {
         'state': initial || {},
         'handleAction': actionHandler,
+        'subscriptions': [],
         'notify': function(subscriptions){
-          var store = this;
-          this.subscriptions.forEach(function(subscription){
-            subscription(Object.assign({}, store.state));
-          });
-        },
-        'subscriptions': []
+          this.subscriptions.forEach((subscription) => subscription(Object.assign({}, this.state)));
+        }
       };
     },
     // Subscribe to listen to any changes that affect a view.
