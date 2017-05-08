@@ -5,12 +5,20 @@
   "main": "build/plux.js",
   "dependencies": {},
   "devDependencies": {
-    "express": "^4.14.0",
-    "browserify": "^14.3.0"
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
+    "babel-preset-latest": "^6.24.1",
+    "express": "^4.14.0"
   },
   "scripts": {
     "start": "node dev.js",
-    "build": "browserify index.js --standalone plux -o plux.js"
+    "build": "babel src -d build"
+  },
+  "babel": {
+    "presets": [
+      "latest"
+    ],
+    "plugins": ["transform-es2015-modules-umd"]
   },
   "author": "Peter Shafer",
   "license": "ISC"
