@@ -1,3 +1,4 @@
+"use strict";
 // Based on description here:
 // https://github.com/facebook/flux/tree/master/examples/flux-concepts
 var plux = (function(){
@@ -5,7 +6,7 @@ var plux = (function(){
     var noop = function(){};
     var dispatch = function(action, data){
         // Iterate through all registered stores to dispatch the action.
-        for(storeID in stores){
+        for(var storeID in stores){
             var store = stores[storeID];
             // Handle the action and trigger any mutations.
             store.handleAction(
@@ -62,3 +63,5 @@ var plux = (function(){
     }
     return API;
 })();
+
+module.exports = plux;
