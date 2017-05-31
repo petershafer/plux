@@ -20,18 +20,34 @@ describe(`Plux API`, function() {
 describe(`createStore`, function() {
   it('should accept an action handler that is called for every action', function() {
     let handlerCalled = false;
-    let actionHandler = function(action, data, state){
+    let actionHandler = (action, data, state) => {
         switch(action){
             case "anAction":
                 handlerCalled = true;
                 break;
         }
     };
-    plux.createStore("shared", actionHandler, { 'actionTaken': false }); 
+    plux.createStore("test-1", actionHandler, { 'actionTaken': false }); 
     plux.createAction("anAction")();
     expect(handlerCalled).to.be.true;
   });
 
+  it('should allow for subscriptions to the new store', function() {
+    let subscriptionCalled = false;
+    let actionHandler = function(action, data, state){
+        switch(action){
+            case "anAction":
+                break;
+        }
+    };
+    plux.createStore("test-2", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    plux.subscribe("test-2", (state) => {
+      subscriptionCalled = true;
+    });
+    expect(subscriptionCalled).to.be.true;
+  });
+
   
-  
+
 });
