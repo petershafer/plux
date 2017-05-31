@@ -16,3 +16,22 @@ describe(`Plux API`, function() {
     expect(typeof plux.createStore).to.be.equal("function");
   });
 });
+
+describe(`createStore`, function() {
+  it('should accept an action handler that is called for every action', function() {
+    let handlerCalled = false;
+    let actionHandler = function(action, data, state){
+        switch(action){
+            case "anAction":
+                handlerCalled = true;
+                break;
+        }
+    };
+    plux.createStore("shared", actionHandler, { 'actionTaken': false }); 
+    plux.createAction("anAction")();
+    expect(handlerCalled).to.be.true;
+  });
+
+  
+  
+});
