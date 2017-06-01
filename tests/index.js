@@ -112,9 +112,9 @@ describe(`subscribe`, function() {
                 break;
         }
     };
-    plux.createStore("test-5", actionHandler, { }); 
+    plux.createStore("test-6", actionHandler, { }); 
     let anAction = plux.createAction("anAction");
-    let subscription = plux.subscribe("test-5", (state) => subscriptionCalled++);
+    let subscription = plux.subscribe("test-6", (state) => subscriptionCalled++);
     expect(subscriptionCalled).to.be.equal(1);
     anAction();
     expect(subscriptionCalled).to.be.equal(2);
@@ -123,7 +123,27 @@ describe(`subscribe`, function() {
     expect(subscriptionCalled).to.be.equal(2);
   });
 
-
 });
 
+describe(`createAction`, function() {
+  it('should return a callable method that invokes the given action against all stores with specified data', function() {
+    let subscriptionCalled = false;
+    let actionHandler = function(action, data, state){
+        switch(action){
+            case "anAction":
+              state.hello = data;
+                break;
+        }
+    };
+    plux.createStore("test-7", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    expect(typeof anAction).to.be.equal("function");
+    anAction("world");
+    let currentState = plux.getState("test-7");
+    expect(currentState).to.be.ok;
+    expect(currentState).to.have.property('hello');
+    expect(currentState.hello).to.be.equal("world");
+
+  });
+});
 
