@@ -42,9 +42,7 @@ describe(`createStore`, function() {
     };
     plux.createStore("test-2", actionHandler, { }); 
     let anAction = plux.createAction("anAction");
-    plux.subscribe("test-2", (state) => {
-      subscriptionCalled++;
-    });
+    plux.subscribe("test-2", (state) => subscriptionCalled++);
     expect(subscriptionCalled).to.be.equal(1);
     anAction();
     expect(subscriptionCalled).to.be.equal(2);
@@ -68,4 +66,25 @@ describe(`createStore`, function() {
     expect(currentState.hello).to.be.equal("world");
   });
 
+});
+
+describe(`subscribe`, function() {
+  it('should return an API with two properties and a method', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state){
+        switch(action){
+            case "anAction":
+                break;
+        }
+    };
+    plux.createStore("test-4", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    let subscription = plux.subscribe("test-4", (state) => subscriptionCalled++);
+    expect(subscription).to.have.a.property('unsubscribe');
+    expect(typeof subscription.unsubscribe).to.be.equal("function");
+    expect(subscription).to.have.a.property('id');
+    expect(typeof subscription.id).to.be.equal("number");
+    expect(subscription).to.have.a.property('store');
+    expect(typeof subscription.store).to.be.equal("string");
+  });
 });
