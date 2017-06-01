@@ -15,7 +15,8 @@
   },
   "scripts": {
     "start": "node dev.js",
-    "build": "babel src -d build"
+    "build": "babel src -d build",
+    "test": "mocha tests/index.js"
   },
   "babel": {
     "presets": [
