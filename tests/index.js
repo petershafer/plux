@@ -7,13 +7,13 @@ var plux = require('../src/plux');
 describe(`Plux API`, function() {
   it('should have four primary API methods', function() {
     expect(plux).to.have.a.property('createStore');
-    expect(typeof plux.createStore).to.be.equal("function");
+    expect(plux.createStore).to.be.a("function");
     expect(plux).to.have.a.property('subscribe');
-    expect(typeof plux.createStore).to.be.equal("function");
+    expect(plux.subscribe).to.be.a("function");
     expect(plux).to.have.a.property('createAction');
-    expect(typeof plux.createStore).to.be.equal("function");
+    expect(plux.createAction).to.be.a("function");
     expect(plux).to.have.a.property('getState');
-    expect(typeof plux.createStore).to.be.equal("function");
+    expect(plux.getState).to.be.a("function");
   });
 });
 
@@ -81,11 +81,11 @@ describe(`subscribe`, function() {
     let anAction = plux.createAction("anAction");
     let subscription = plux.subscribe("test-4", (state) => subscriptionCalled++);
     expect(subscription).to.have.a.property('unsubscribe');
-    expect(typeof subscription.unsubscribe).to.be.equal("function");
+    expect(subscription.unsubscribe).to.be.a("function");
     expect(subscription).to.have.a.property('id');
-    expect(typeof subscription.id).to.be.equal("number");
+    expect(subscription.id).to.be.a("number");
     expect(subscription).to.have.a.property('store');
-    expect(typeof subscription.store).to.be.equal("string");
+    expect(subscription.store).to.be.a("string");
   });
 
   it('should accept a callback function that receives all state updates', function() {
@@ -137,7 +137,7 @@ describe(`createAction`, function() {
     };
     plux.createStore("test-7", actionHandler, { }); 
     let anAction = plux.createAction("anAction");
-    expect(typeof anAction).to.be.equal("function");
+    expect(anAction).to.be.a("function");
     anAction("world");
     let currentState = plux.getState("test-7");
     expect(currentState).to.be.ok;
@@ -159,6 +159,6 @@ describe(`getState`, function() {
     plux.createStore("test-8", actionHandler, { }); 
     let currentState = plux.getState("test-8");
     expect(currentState).to.be.ok;
-    expect(typeof currentState).to.be.equal('object');
+    expect(currentState).to.be.a('object');
   });
 });
