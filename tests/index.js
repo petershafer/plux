@@ -87,4 +87,43 @@ describe(`subscribe`, function() {
     expect(subscription).to.have.a.property('store');
     expect(typeof subscription.store).to.be.equal("string");
   });
+
+  it('should accept a callback function that receives all state updates', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state){
+        switch(action){
+            case "anAction":
+                break;
+        }
+    };
+    plux.createStore("test-5", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    plux.subscribe("test-5", (state) => subscriptionCalled++);
+    expect(subscriptionCalled).to.be.equal(1);
+    anAction();
+    expect(subscriptionCalled).to.be.equal(2);
+  });
+
+  it('should stop sending state updates to callback after unsubscribe is called', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state){
+        switch(action){
+            case "anAction":
+                break;
+        }
+    };
+    plux.createStore("test-5", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    let subscription = plux.subscribe("test-5", (state) => subscriptionCalled++);
+    expect(subscriptionCalled).to.be.equal(1);
+    anAction();
+    expect(subscriptionCalled).to.be.equal(2);
+    subscription.unsubscribe();
+    anAction();
+    expect(subscriptionCalled).to.be.equal(2);
+  });
+
+
 });
+
+
