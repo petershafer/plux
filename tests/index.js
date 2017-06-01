@@ -147,3 +147,18 @@ describe(`createAction`, function() {
   });
 });
 
+describe(`getState`, function() {
+  it('should return an object representative of the state held by the specified store', function() {
+    let actionHandler = function(action, data, state){
+        switch(action){
+            case "anAction":
+              state.hello = data;
+                break;
+        }
+    };
+    plux.createStore("test-8", actionHandler, { }); 
+    let currentState = plux.getState("test-8");
+    expect(currentState).to.be.ok;
+    expect(typeof currentState).to.be.equal('object');
+  });
+});
