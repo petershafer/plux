@@ -33,7 +33,7 @@ describe(`createStore`, function() {
   });
 
   it('should allow for subscriptions to the new store', function() {
-    let subscriptionCalled = false;
+    let subscriptionCalled = 0;
     let actionHandler = function(action, data, state){
         switch(action){
             case "anAction":
@@ -43,11 +43,29 @@ describe(`createStore`, function() {
     plux.createStore("test-2", actionHandler, { }); 
     let anAction = plux.createAction("anAction");
     plux.subscribe("test-2", (state) => {
-      subscriptionCalled = true;
+      subscriptionCalled++;
     });
-    expect(subscriptionCalled).to.be.true;
+    expect(subscriptionCalled).to.be.equal(1);
+    anAction();
+    expect(subscriptionCalled).to.be.equal(2);
   });
 
-  
+  it('should allow for state retrieval for the new store', function() {
+    let subscriptionCalled = false;
+    let actionHandler = function(action, data, state){
+        switch(action){
+            case "anAction":
+              state.hello = data;
+                break;
+        }
+    };
+    plux.createStore("test-3", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    anAction("world");
+    let currentState = plux.getState("test-3");
+    expect(currentState).to.be.ok;
+    expect(currentState).to.have.property('hello');
+    expect(currentState.hello).to.be.equal("world");
+  });
 
 });
