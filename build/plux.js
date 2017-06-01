@@ -17,7 +17,7 @@
 
   var plux = function () {
     var stores = []; // Contains references to all stores.
-    var noop = function noop() {};
+    var subscriptionCounters = []; // Tracks IDs to assign to subscribers
     var dispatch = function dispatch(action, data) {
       // Iterate through all registered stores to dispatch the action.
       for (var storeID in stores) {
@@ -28,7 +28,10 @@
       };
     };
     var _unsubscribe = function _unsubscribe(storeName, id) {
-      return stores[storeName].subscriptions[id] = noop;
+      var subscriptionIndex = stores[storeName].subscriptions.findIndex(function (entry) {
+        return entry[0] == id;
+      });
+      stores[storeName].subscriptions.splice(subscriptionIndex, 1);
     };
     var API = {
       // Register a store with plux to receive actions and manage state.
@@ -41,15 +44,16 @@
             var _this = this;
 
             this.subscriptions.forEach(function (subscription) {
-              return subscription(Object.assign({}, _this.state));
+              return subscription[1](Object.assign({}, _this.state));
             });
           }
         };
       },
       // Subscribe to listen to any changes that affect a view.
       'subscribe': function subscribe(storeName, subscriber) {
-        var subid = stores[storeName].subscriptions.length;
-        stores[storeName].subscriptions.push(subscriber);
+        subscriptionCounters[storeName] = subscriptionCounters[storeName] || 0;
+        var subid = subscriptionCounters[storeName]++;
+        stores[storeName].subscriptions.push([subid, subscriber]);
         subscriber(stores[storeName].state);
         return {
           "unsubscribe": function unsubscribe() {

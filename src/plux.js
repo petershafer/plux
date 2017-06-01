@@ -3,7 +3,7 @@
 // https://github.com/facebook/flux/tree/master/examples/flux-concepts
 const plux = (() => {
   const stores = []; // Contains references to all stores.
-  const noop = () => {};
+  const subscriptionCounters = []; // Tracks IDs to assign to subscribers
   const dispatch = (action, data) => {
     // Iterate through all registered stores to dispatch the action.
     for(let storeID in stores){
@@ -17,7 +17,10 @@ const plux = (() => {
       store.notify(store.subscriptions);
     };
   };
-  const unsubscribe = (storeName, id) => stores[storeName].subscriptions[id] = noop;
+  const unsubscribe = (storeName, id) => {
+    let subscriptionIndex = stores[storeName].subscriptions.findIndex((entry) => entry[0] == id);
+    stores[storeName].subscriptions.splice(subscriptionIndex, 1);
+  };
   const API = {
     // Register a store with plux to receive actions and manage state.
     'createStore': (name, actionHandler, initial) => {
@@ -26,14 +29,15 @@ const plux = (() => {
         'handleAction': actionHandler,
         'subscriptions': [],
         'notify': function(subscriptions){
-          this.subscriptions.forEach((subscription) => subscription(Object.assign({}, this.state)));
+          this.subscriptions.forEach((subscription) => subscription[1](Object.assign({}, this.state)));
         }
       };
     },
     // Subscribe to listen to any changes that affect a view.
     'subscribe': (storeName, subscriber) => {
-      const subid = stores[storeName].subscriptions.length;
-      stores[storeName].subscriptions.push(subscriber);
+      subscriptionCounters[storeName] = subscriptionCounters[storeName] || 0
+      const subid = subscriptionCounters[storeName]++;
+      stores[storeName].subscriptions.push([subid, subscriber]);
       subscriber(stores[storeName].state);
       return {
         "unsubscribe": () => unsubscribe(storeName, subid),
