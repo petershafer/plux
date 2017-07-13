@@ -29,15 +29,21 @@ const plux = (() => {
         'handleAction': actionHandler,
         'subscriptions': [],
         'notify': function(subscriptions){
-          this.subscriptions.forEach((subscription) => subscription[1](Object.assign({}, this.state)));
+          this.subscriptions.forEach((subscription) => {
+            const filter = subscription[2];
+            const results = filter ? filter(this.state) : this.state;
+            if(results){
+              subscription[1](Object.assign({}, results));
+            }
+          });
         }
       };
     },
     // Subscribe to listen to any changes that affect a view.
-    'subscribe': (storeName, subscriber) => {
+    'subscribe': (storeName, subscriber, filter) => {
       subscriptionCounters[storeName] = subscriptionCounters[storeName] || 0
       const subid = subscriptionCounters[storeName]++;
-      stores[storeName].subscriptions.push([subid, subscriber]);
+      stores[storeName].subscriptions.push([subid, subscriber, filter]);
       subscriber(stores[storeName].state);
       return {
         "unsubscribe": () => unsubscribe(storeName, subid),
