@@ -43,9 +43,9 @@ describe(`createStore`, function() {
     plux.createStore("test-2", actionHandler, { }); 
     let anAction = plux.createAction("anAction");
     plux.subscribe("test-2", (state) => subscriptionCalled++);
-    expect(subscriptionCalled).to.be.equal(1);
+    expect(subscriptionCalled).to.be.equal(0);
     anAction();
-    expect(subscriptionCalled).to.be.equal(2);
+    expect(subscriptionCalled).to.be.equal(1);
   });
 
   it('should allow for state retrieval for the new store', function() {
@@ -99,9 +99,61 @@ describe(`subscribe`, function() {
     plux.createStore("test-5", actionHandler, { }); 
     let anAction = plux.createAction("anAction");
     plux.subscribe("test-5", (state) => subscriptionCalled++);
-    expect(subscriptionCalled).to.be.equal(1);
+    expect(subscriptionCalled).to.be.equal(0);
     anAction();
-    expect(subscriptionCalled).to.be.equal(2);
+    expect(subscriptionCalled).to.be.equal(1);
+  });
+
+  it('should accept a filter function that is called before the subscriber function', function() {
+    let callCount = 0;
+    let subscriptionLastCall = null;
+    let filterLastCall = null;
+    let actionHandler = function(action, data, state){
+        switch(action){
+            case "anAction":
+                break;
+        }
+    };
+    plux.createStore("test-0716-1", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    plux.subscribe("test-0716-1", (state) => subscriptionLastCall = callCount++, (state) => { filterLastCall = callCount++; return state; });
+    anAction();
+    expect(filterLastCall).to.be.equal(0);
+    expect(subscriptionLastCall).to.be.equal(1);
+  });
+
+  it('should only call the subscriber function if the filter function returns a non-false value', function() {
+    let subscriberCalls = 0;
+    let filterCalls = 0;
+    let actionHandler = function(action, data, state){
+        switch(action){
+            case "anAction":
+                break;
+        }
+    };
+    plux.createStore("test-0716-2", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    plux.subscribe("test-0716-2", (state) => subscriberCalls++, (state) => ++filterCalls % 2 == 0 ? state : false );
+    anAction();
+    expect(filterCalls).to.be.equal(1);
+    expect(subscriberCalls).to.be.equal(0);
+    anAction();
+    expect(filterCalls).to.be.equal(2);
+    expect(subscriberCalls).to.be.equal(1);
+  });
+
+  it('should call the subscriber with the value returned by the filter function', function() {
+    let actionHandler = function(action, data, state){
+        switch(action){
+            case "anAction":
+                break;
+        }
+    };
+    plux.createStore("test-0716-3", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    const subscription = plux.subscribe("test-0716-3", (state) => expect(state.answer).to.be.equal(42), (state) => { return { 'answer': 42 } } );
+    anAction();
+    subscription.unsubscribe();
   });
 
   it('should stop sending state updates to callback after unsubscribe is called', function() {
@@ -115,12 +167,11 @@ describe(`subscribe`, function() {
     plux.createStore("test-6", actionHandler, { }); 
     let anAction = plux.createAction("anAction");
     let subscription = plux.subscribe("test-6", (state) => subscriptionCalled++);
-    expect(subscriptionCalled).to.be.equal(1);
     anAction();
-    expect(subscriptionCalled).to.be.equal(2);
+    expect(subscriptionCalled).to.be.equal(1);
     subscription.unsubscribe();
     anAction();
-    expect(subscriptionCalled).to.be.equal(2);
+    expect(subscriptionCalled).to.be.equal(1);
   });
 
 });

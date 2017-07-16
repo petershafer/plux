@@ -44,16 +44,20 @@
             var _this = this;
 
             this.subscriptions.forEach(function (subscription) {
-              return subscription[1](Object.assign({}, _this.state));
+              var filter = subscription[2];
+              var results = filter ? filter(_this.state) : _this.state;
+              if (results) {
+                subscription[1](Object.assign({}, results));
+              }
             });
           }
         };
       },
       // Subscribe to listen to any changes that affect a view.
-      'subscribe': function subscribe(storeName, subscriber) {
+      'subscribe': function subscribe(storeName, subscriber, filter) {
         subscriptionCounters[storeName] = subscriptionCounters[storeName] || 0;
         var subid = subscriptionCounters[storeName]++;
-        stores[storeName].subscriptions.push([subid, subscriber]);
+        stores[storeName].subscriptions.push([subid, subscriber, filter]);
         subscriber(stores[storeName].state);
         return {
           "unsubscribe": function unsubscribe() {
