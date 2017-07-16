@@ -32,7 +32,7 @@ const plux = (() => {
           this.subscriptions.forEach((subscription) => {
             const filter = subscription[2];
             const results = filter ? filter(this.state) : this.state;
-            if(results){
+            if(results !== false){
               subscription[1](Object.assign({}, results));
             }
           });
