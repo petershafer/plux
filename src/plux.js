@@ -44,7 +44,6 @@ const plux = (() => {
       subscriptionCounters[storeName] = subscriptionCounters[storeName] || 0
       const subid = subscriptionCounters[storeName]++;
       stores[storeName].subscriptions.push([subid, subscriber, filter]);
-      subscriber(stores[storeName].state);
       return {
         "unsubscribe": () => unsubscribe(storeName, subid),
         "id": subid,
