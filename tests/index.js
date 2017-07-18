@@ -226,6 +226,23 @@ describe(`once`, function() {
     anAction();
     expect(subscriptionCalled).to.be.equal(1);
   });
+  it('should not execute the callback if it is canceled before the filter criteria is met.', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state){
+        switch(action){
+          case "anAction":
+            state.count++;
+            break;
+        }
+    };
+    plux.createStore("test-0718-4", actionHandler, { 'count': 0 }); 
+    let anAction = plux.createAction("anAction");
+    const waitForCount = plux.once("test-0718-4", (state) => subscriptionCalled++, (state) => state.count == 1);
+    expect(subscriptionCalled).to.be.equal(0);
+    waitForCount.cancel();
+    anAction();
+    expect(subscriptionCalled).to.be.equal(0);
+  });
 });
 
 describe(`createAction`, function() {
