@@ -50,6 +50,27 @@ const plux = (() => {
         "store": storeName
       }
     },
+    // Runs callback function if state meets specified filter function criteria, or
+    // subscribes to the store and waits for filter function to be met and unsubscribes.
+    'once': (storeName, callback, condition) => {
+      const state = plux.getState(storeName);
+      // TODO: Eliminate redundant code between once and dispatch.
+      const result = condition(state);
+      if(result !== false){
+        callback(result);
+        return {
+          "unsubscribe": () => null,
+          "id": null,
+          "store": storeName
+        }
+      }else{
+        const subscription = plux.subscribe(storeName, (state) => {
+          callback(state);
+          subscription.unsubscribe();
+        }, condition);
+        return subscription;
+      }
+    },
     // Register an action that's available for views to trigger.
     'createAction': (name) => (data) => dispatch(name, data),
     // Allow retrieval of state of specified store
