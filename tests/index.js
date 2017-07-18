@@ -176,6 +176,21 @@ describe(`subscribe`, function() {
 
 });
 
+describe(`once`, function() {
+  it('should accept a callback function and a filter function', function() {
+    expect(true).to.be.false;
+  });
+  it('should only ever execute the callback function once', function() {
+    expect(true).to.be.false;
+  });
+  it('should execute the callback function immediately if state meets filter criteria', function() {
+    expect(true).to.be.false;
+  });
+  it('should execute the callback function later uf the state does not meet the filter criteria', function() {
+    expect(true).to.be.false;
+  });
+});
+
 describe(`createAction`, function() {
   it('should return a callable method that invokes the given action against all stores with specified data', function() {
     let subscriptionCalled = false;
