@@ -54,7 +54,7 @@ const plux = (() => {
     // Runs callback function if state meets specified filter function criteria, or
     // subscribes to the store and waits for filter function to be met and unsubscribes.
     'once': (storeName, callback, condition) => {
-      executeNotification(condition, plux.getState(storeName), callback);
+      const result = executeNotification(condition, plux.getState(storeName), callback);
       const options = {'cancel': () => null};
       if(result === false){
         const subscription = plux.subscribe(storeName, (state) => {

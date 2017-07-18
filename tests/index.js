@@ -178,16 +178,53 @@ describe(`subscribe`, function() {
 
 describe(`once`, function() {
   it('should accept a callback function and a filter function', function() {
-    expect(true).to.be.false;
+    expect(plux).to.have.a.property('once');
+    expect(plux.once).to.be.a("function");
   });
   it('should only ever execute the callback function once', function() {
-    expect(true).to.be.false;
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state){
+        switch(action){
+            case "anAction":
+                break;
+        }
+    };
+    plux.createStore("test-0718-1", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    plux.once("test-0718-1", (state) => subscriptionCalled++, (state) => state);
+    expect(subscriptionCalled).to.be.equal(1);
+    anAction();
+    expect(subscriptionCalled).to.be.equal(1);
   });
   it('should execute the callback function immediately if state meets filter criteria', function() {
-    expect(true).to.be.false;
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state){
+        switch(action){
+          case "anAction":
+            state.count++;
+            break;
+        }
+    };
+    plux.createStore("test-0718-2", actionHandler, { 'count': 1 }); 
+    let anAction = plux.createAction("anAction");
+    plux.once("test-0718-2", (state) => subscriptionCalled++, (state) => state.count == 1);
+    expect(subscriptionCalled).to.be.equal(1);
   });
-  it('should execute the callback function later uf the state does not meet the filter criteria', function() {
-    expect(true).to.be.false;
+  it('should execute the callback function later if the state does not meet the filter criteria', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state){
+        switch(action){
+          case "anAction":
+            state.count++;
+            break;
+        }
+    };
+    plux.createStore("test-0718-3", actionHandler, { 'count': 0 }); 
+    let anAction = plux.createAction("anAction");
+    plux.once("test-0718-3", (state) => subscriptionCalled++, (state) => state.count == 1);
+    expect(subscriptionCalled).to.be.equal(0);
+    anAction();
+    expect(subscriptionCalled).to.be.equal(1);
   });
 });
 

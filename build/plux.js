@@ -72,7 +72,7 @@
       // Runs callback function if state meets specified filter function criteria, or
       // subscribes to the store and waits for filter function to be met and unsubscribes.
       'once': function once(storeName, callback, condition) {
-        executeNotification(condition, plux.getState(storeName), callback);
+        var result = executeNotification(condition, plux.getState(storeName), callback);
         var options = { 'cancel': function cancel() {
             return null;
           } };
