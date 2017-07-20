@@ -19,7 +19,9 @@ const plux = (() => {
   };
   const unsubscribe = (storeName, id) => {
     let subscriptionIndex = stores[storeName].subscriptions.findIndex((entry) => entry[0] == id);
-    stores[storeName].subscriptions.splice(subscriptionIndex, 1);
+    if(subscriptionIndex >= 0){
+      stores[storeName].subscriptions.splice(subscriptionIndex, 1);
+    }
   };
   const API = {
     // Register a store with plux to receive actions and manage state.
