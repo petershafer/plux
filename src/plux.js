@@ -23,6 +23,13 @@ const plux = (() => {
       stores[storeName].subscriptions.splice(subscriptionIndex, 1);
     }
   };
+  const executeNotification = (filter, state, callback) => {
+    const results = filter ? filter(state) : state;
+    if(results !== false){
+      callback(Object.assign({}, results));
+    }
+    return results;
+  };
   const API = {
     // Register a store with plux to receive actions and manage state.
     'createStore': (name, actionHandler, initial) => {
@@ -31,13 +38,7 @@ const plux = (() => {
         'handleAction': actionHandler,
         'subscriptions': [],
         'notify': function(subscriptions){
-          this.subscriptions.forEach((subscription) => {
-            const filter = subscription[2];
-            const results = filter ? filter(this.state) : this.state;
-            if(results !== false){
-              subscription[1](Object.assign({}, results));
-            }
-          });
+          this.subscriptions.forEach((subscription) => executeNotification(subscription[2], this.state, subscription[1]));
         }
       };
     },
@@ -51,6 +52,20 @@ const plux = (() => {
         "id": subid,
         "store": storeName
       }
+    },
+    // Runs callback function if state meets specified filter function criteria, or
+    // subscribes to the store and waits for filter function to be met and unsubscribes.
+    'once': (storeName, callback, condition) => {
+      const result = executeNotification(condition, plux.getState(storeName), callback);
+      const options = {'cancel': () => null};
+      if(result === false){
+        const subscription = plux.subscribe(storeName, (state) => {
+          callback(state);
+          subscription.unsubscribe();
+        }, condition);
+        options.cancel = () => subscription.unsubscribe();
+      }
+      return options;
     },
     // Register an action that's available for views to trigger.
     'createAction': (name) => (data) => dispatch(name, data),

@@ -33,6 +33,13 @@
       });
       stores[storeName].subscriptions.splice(subscriptionIndex, 1);
     };
+    var executeNotification = function executeNotification(filter, state, callback) {
+      var results = filter ? filter(state) : state;
+      if (results !== false) {
+        callback(Object.assign({}, results));
+      }
+      return results;
+    };
     var API = {
       // Register a store with plux to receive actions and manage state.
       'createStore': function createStore(name, actionHandler, initial) {
@@ -44,11 +51,7 @@
             var _this = this;
 
             this.subscriptions.forEach(function (subscription) {
-              var filter = subscription[2];
-              var results = filter ? filter(_this.state) : _this.state;
-              if (results) {
-                subscription[1](Object.assign({}, results));
-              }
+              return executeNotification(subscription[2], _this.state, subscription[1]);
             });
           }
         };
@@ -58,7 +61,6 @@
         subscriptionCounters[storeName] = subscriptionCounters[storeName] || 0;
         var subid = subscriptionCounters[storeName]++;
         stores[storeName].subscriptions.push([subid, subscriber, filter]);
-        subscriber(stores[storeName].state);
         return {
           "unsubscribe": function unsubscribe() {
             return _unsubscribe(storeName, subid);
@@ -66,6 +68,24 @@
           "id": subid,
           "store": storeName
         };
+      },
+      // Runs callback function if state meets specified filter function criteria, or
+      // subscribes to the store and waits for filter function to be met and unsubscribes.
+      'once': function once(storeName, callback, condition) {
+        var result = executeNotification(condition, plux.getState(storeName), callback);
+        var options = { 'cancel': function cancel() {
+            return null;
+          } };
+        if (result === false) {
+          var subscription = plux.subscribe(storeName, function (state) {
+            callback(state);
+            subscription.unsubscribe();
+          }, condition);
+          options.cancel = function () {
+            return subscription.unsubscribe();
+          };
+        }
+        return options;
       },
       // Register an action that's available for views to trigger.
       'createAction': function createAction(name) {
