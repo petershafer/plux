@@ -30,15 +30,24 @@ const plux = (() => {
   };
   const API = {
     // Register a store with plux to receive actions and manage state.
-    'createStore': (name, actionHandler, initial) => {
+    'createStore': function(name, actionHandler, initial){
       stores[name] = stores[name] || {
         'state': initial || {},
         'handleAction': actionHandler,
         'subscriptions': [],
+        'getters': {},
         'notify': function(subscriptions, event){
           this.subscriptions.filter(([,,subEvent]) => event === subEvent || subEvent === "_all").forEach((subscription) => subscription[1](Object.assign({}, this.state), event));
         }
       };
+      const plux = this;
+      return {
+        'name': name,
+        'subscribe': function(subscriber, event="change"){ return plux.subscribe(name, subscriber, event); },
+        'listen': function(event, subscriber){ return plux.listen(name, event, subscriber); },
+        'get': (getter) => stores[name].getters[getter] ? stores[name].getters[getter](stores[name].state) : null,
+        'createGetter': (getterName, getterFunction) => stores[name].getters[getterName] = getterFunction,
+      }
     },
     // Subscribe to listen to any changes that affect a view. Optionally specify an event to filter by.
     'subscribe': (storeName, subscriber, event="change") => {
