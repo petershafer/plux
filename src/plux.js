@@ -40,7 +40,7 @@ const plux = (() => {
         }
       };
     },
-    // Subscribe to listen to any changes that affect a view.
+    // Subscribe to listen to any changes that affect a view. Optionally specify an event to filter by.
     'subscribe': (storeName, subscriber, event="change") => {
       subscriptionCounters[storeName] = subscriptionCounters[storeName] || 0
       const subid = subscriptionCounters[storeName]++;
@@ -50,6 +50,10 @@ const plux = (() => {
         "id": subid,
         "store": storeName
       }
+    },
+    // Listen is almost the same as subscribe, but it emphasizes an event you want to listen for, rather than a store you want to subscribe to.
+    'listen': function(storeName, event, listener){
+      return this.subscribe(storeName, listener, event);
     },
     // Register an action that's available for views to trigger.
     'createAction': (name) => (data) => dispatch(name, data),

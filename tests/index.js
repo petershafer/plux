@@ -14,6 +14,8 @@ describe(`Plux API`, function() {
     expect(plux.createAction).to.be.a("function");
     expect(plux).to.have.a.property('getState');
     expect(plux.getState).to.be.a("function");
+    expect(plux).to.have.a.property('listen');
+    expect(plux.getState).to.be.a("function");
   });
 });
 
@@ -131,6 +133,8 @@ describe(`subscribe`, function() {
   it('should allow you to subscribe to listen only for specific events', function() {
     let subscriptionCalledA = 0;
     let subscriptionCalledB = 0;
+    let altSubscriptionCalledA = 0;
+    let altSubscriptionCalledB = 0;
     let actionHandler = function(action, data, state, event){
         switch(action){
             case "anAction":
@@ -143,9 +147,15 @@ describe(`subscribe`, function() {
     let anAction = plux.createAction("anAction");
     plux.subscribe("test-0727-1", (state) => subscriptionCalledA++, "hello");
     plux.subscribe("test-0727-1", (state) => subscriptionCalledB++, "world");
+    plux.listen("test-0727-1", "hello", (state) => altSubscriptionCalledA++);
+    plux.listen("test-0727-1", "world", (state) => altSubscriptionCalledB++);
     anAction();
+    // via plux.subscribe
     expect(subscriptionCalledA).to.be.equal(1);
     expect(subscriptionCalledB).to.be.equal(1);
+    // via plux.listen
+    expect(altSubscriptionCalledA).to.be.equal(1);
+    expect(altSubscriptionCalledB).to.be.equal(1);
   });
 
   it('should ensure that a change event always fires if a custom event fires', function() {
