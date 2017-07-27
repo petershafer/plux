@@ -102,7 +102,7 @@
 
               return event === subEvent || subEvent === "_all";
             }).forEach(function (subscription) {
-              return subscription[1](Object.assign({}, _this.state));
+              return subscription[1](Object.assign({}, _this.state), event);
             });
           }
         };

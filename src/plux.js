@@ -36,7 +36,7 @@ const plux = (() => {
         'handleAction': actionHandler,
         'subscriptions': [],
         'notify': function(subscriptions, event){
-          this.subscriptions.filter(([,,subEvent]) => event === subEvent || subEvent === "_all").forEach((subscription) => subscription[1](Object.assign({}, this.state)));
+          this.subscriptions.filter(([,,subEvent]) => event === subEvent || subEvent === "_all").forEach((subscription) => subscription[1](Object.assign({}, this.state), event));
         }
       };
     },
