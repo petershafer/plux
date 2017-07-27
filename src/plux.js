@@ -52,6 +52,7 @@ const plux = (() => {
           return stores[name].getters[getter] ? stores[name].getters[getter](stores[name].state) : null
         },
         'createGetter': (getterName, getterFunction) => stores[name].getters[getterName] = getterFunction,
+        'once': function(event, callback){ return plux.once(name, event, callback); },
       }
     },
     // Subscribe to listen to any changes that affect a view. Optionally specify an event to filter by.
@@ -68,6 +69,13 @@ const plux = (() => {
     // Listen is almost the same as subscribe, but it emphasizes an event you want to listen for, rather than a store you want to subscribe to.
     'listen': function(storeName, event, listener){
       return this.subscribe(storeName, listener, event);
+    },
+    'once': function once(storeName, event, callback) {
+      const listener = this.listen(storeName, event, (state, event) => {
+        callback(state, event);
+        listener.unsubscribe();
+      });
+      return { 'cancel': () => listener.unsubscribe() }
     },
     // Register an action that's available for views to trigger.
     'createAction': (name) => (data) => dispatch(name, data),

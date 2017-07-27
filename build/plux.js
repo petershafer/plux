@@ -125,6 +125,9 @@
           },
           'createGetter': function createGetter(getterName, getterFunction) {
             return stores[name].getters[getterName] = getterFunction;
+          },
+          'once': function once(event, callback) {
+            return plux.once(name, event, callback);
           }
         };
       },
@@ -146,6 +149,15 @@
       // Listen is almost the same as subscribe, but it emphasizes an event you want to listen for, rather than a store you want to subscribe to.
       'listen': function listen(storeName, event, listener) {
         return this.subscribe(storeName, listener, event);
+      },
+      'once': function once(storeName, event, callback) {
+        var listener = this.listen(storeName, event, function (state, event) {
+          callback(state, event);
+          listener.unsubscribe();
+        });
+        return { 'cancel': function cancel() {
+            return listener.unsubscribe();
+          } };
       },
       // Register an action that's available for views to trigger.
       'createAction': function createAction(name) {
