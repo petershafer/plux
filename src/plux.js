@@ -8,13 +8,18 @@ const plux = (() => {
     // Iterate through all registered stores to dispatch the action.
     for(let storeID in stores){
       let store = stores[storeID];
+      // Collect events
+      let events = new Set();
+      let change = (event="change") => events.add(event);
       // Handle the action and trigger any mutations.
       store.handleAction(
         action, 
         data, 
-        store.state
+        store.state,
+        change
       );
-      store.notify(store.subscriptions);
+      events.add("change");
+      events.forEach((event) => store.notify(store.subscriptions, event));
     };
   };
   const unsubscribe = (storeName, id) => {
@@ -30,27 +35,25 @@ const plux = (() => {
         'state': initial || {},
         'handleAction': actionHandler,
         'subscriptions': [],
-        'notify': function(subscriptions){
-          this.subscriptions.forEach((subscription) => {
-            const filter = subscription[2];
-            const results = filter ? filter(this.state) : this.state;
-            if(results !== false){
-              subscription[1](Object.assign({}, results));
-            }
-          });
+        'notify': function(subscriptions, event){
+          this.subscriptions.filter(([,,subEvent]) => event === subEvent || subEvent === "_all").forEach((subscription) => subscription[1](Object.assign({}, this.state), event));
         }
       };
     },
-    // Subscribe to listen to any changes that affect a view.
-    'subscribe': (storeName, subscriber, filter) => {
+    // Subscribe to listen to any changes that affect a view. Optionally specify an event to filter by.
+    'subscribe': (storeName, subscriber, event="change") => {
       subscriptionCounters[storeName] = subscriptionCounters[storeName] || 0
       const subid = subscriptionCounters[storeName]++;
-      stores[storeName].subscriptions.push([subid, subscriber, filter]);
+      stores[storeName].subscriptions.push([subid, subscriber, event]);
       return {
         "unsubscribe": () => unsubscribe(storeName, subid),
         "id": subid,
         "store": storeName
       }
+    },
+    // Listen is almost the same as subscribe, but it emphasizes an event you want to listen for, rather than a store you want to subscribe to.
+    'listen': function(storeName, event, listener){
+      return this.subscribe(storeName, listener, event);
     },
     // Register an action that's available for views to trigger.
     'createAction': (name) => (data) => dispatch(name, data),
