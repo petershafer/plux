@@ -3,9 +3,13 @@
 var expect = require('chai').expect;
 var plux = require('../src/plux');
 
+var i = 0;
+function generateName(){
+    return `store${i++}`;
+}
 
 describe(`Plux API`, function() {
-  it('should have four primary API methods', function() {
+  it('should have five primary API methods', function() {
     expect(plux).to.have.a.property('createStore');
     expect(plux.createStore).to.be.a("function");
     expect(plux).to.have.a.property('subscribe');
@@ -20,6 +24,28 @@ describe(`Plux API`, function() {
 });
 
 describe(`createStore`, function() {
+  it('should return an API with 5 properties/methods and the name should match what was submitted', function() {
+    let actionHandler = (action, data, state, event) => {
+        switch(action){
+            case "anAction":
+                event();
+                break;
+        }
+    };
+    let sharedStore = plux.createStore("test-0727-5", actionHandler, {}); 
+    expect(sharedStore).to.have.a.property('name');
+    expect(sharedStore.name).to.be.a("string");
+    expect(sharedStore.name).to.equal("test-0727-5");
+    expect(sharedStore).to.have.a.property('subscribe');
+    expect(sharedStore.subscribe).to.be.a("function");
+    expect(sharedStore).to.have.a.property('listen');
+    expect(sharedStore.listen).to.be.a("function");
+    expect(sharedStore).to.have.a.property('get');
+    expect(sharedStore.get).to.be.a("function");
+    expect(sharedStore).to.have.a.property('createGetter');
+    expect(sharedStore.createGetter).to.be.a("function");
+  });
+
   it('should accept an action handler that is called for every action', function() {
     let handlerCalled = false;
     let actionHandler = (action, data, state, event) => {
@@ -35,7 +61,7 @@ describe(`createStore`, function() {
     expect(handlerCalled).to.be.true;
   });
 
-  it('should allow for subscriptions to the new store', function() {
+  it('should allow for subscriptions to the new store, via plux', function() {
     let subscriptionCalled = 0;
     let actionHandler = function(action, data, state, event){
         switch(action){
@@ -52,7 +78,24 @@ describe(`createStore`, function() {
     expect(subscriptionCalled).to.be.equal(1);
   });
 
-  it('should allow for state retrieval for the new store', function() {
+  it('should allow for subscriptions to the new store, via the store itself', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+            case "anAction":
+                event();
+                break;
+        }
+    };
+    let sharedStore = plux.createStore("test-0727-4", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    sharedStore.subscribe((state) => subscriptionCalled++);
+    expect(subscriptionCalled).to.be.equal(0);
+    anAction();
+    expect(subscriptionCalled).to.be.equal(1);
+  });
+
+  it('should allow for state retrieval for the new store, via plux', function() {
     let subscriptionCalled = false;
     let actionHandler = function(action, data, state, event){
         switch(action){
@@ -69,6 +112,35 @@ describe(`createStore`, function() {
     expect(currentState).to.be.ok;
     expect(currentState).to.have.property('hello');
     expect(currentState.hello).to.be.equal("world");
+  });
+
+  it('should return an object that includes a get function that returns the state if no arguments are included', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+            case "anAction":
+                event();
+                break;
+        }
+    };
+    let sharedStore = plux.createStore("test-0727-6", actionHandler, { 'hello': 'world' }); 
+    let myState = sharedStore.get();
+    expect(myState.hello).to.be.equal('world');
+  });
+
+  it('should return an object that includes a createGetter function that creates new getters on the store', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+            case "anAction":
+                event();
+                break;
+        }
+    };
+    let sharedStore = plux.createStore("test-0727-7", actionHandler, { 'hello': 'world' }); 
+    sharedStore.createGetter("test", (state) => state.hello);
+    let myValue = sharedStore.get("test");
+    expect(myValue).to.be.equal('world');
   });
 
 });

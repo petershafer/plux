@@ -93,6 +93,7 @@
           'state': initial || {},
           'handleAction': actionHandler,
           'subscriptions': [],
+          'getters': {},
           'notify': function notify(subscriptions, event) {
             var _this = this;
 
@@ -104,6 +105,26 @@
             }).forEach(function (subscription) {
               return subscription[1](Object.assign({}, _this.state), event);
             });
+          }
+        };
+        var plux = this;
+        return {
+          'name': name,
+          'subscribe': function subscribe(subscriber) {
+            var event = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "change";
+            return plux.subscribe(name, subscriber, event);
+          },
+          'listen': function listen(event, subscriber) {
+            return plux.listen(name, event, subscriber);
+          },
+          'get': function get(getter) {
+            if (!getter) {
+              return Object.assign({}, stores[name].state);
+            }
+            return stores[name].getters[getter] ? stores[name].getters[getter](stores[name].state) : null;
+          },
+          'createGetter': function createGetter(getterName, getterFunction) {
+            return stores[name].getters[getterName] = getterFunction;
           }
         };
       },
