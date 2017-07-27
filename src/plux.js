@@ -45,7 +45,12 @@ const plux = (() => {
         'name': name,
         'subscribe': function(subscriber, event="change"){ return plux.subscribe(name, subscriber, event); },
         'listen': function(event, subscriber){ return plux.listen(name, event, subscriber); },
-        'get': (getter) => stores[name].getters[getter] ? stores[name].getters[getter](stores[name].state) : null,
+        'get': (getter) => {
+          if(!getter){
+            return Object.assign({}, stores[name].state);
+          }
+          return stores[name].getters[getter] ? stores[name].getters[getter](stores[name].state) : null
+        },
         'createGetter': (getterName, getterFunction) => stores[name].getters[getterName] = getterFunction,
       }
     },
