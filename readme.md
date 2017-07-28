@@ -2,9 +2,9 @@
 
 If you'd like to try out the demo, follow these steps.
 
-1. npm install
-2. npm start
-3. open your browser to http://localhost:3000/demo
+1. `npm install`
+2. `npm start`
+3. open your browser to [http://localhost:3000/demo]
 
 ## What is Plux?
 
@@ -16,7 +16,7 @@ You can follow the `proof-of-concept` branch to see how Plux is implemented dire
 
 Plux may never be released for general usage, but you can feel free to use the code in your own applications and tweak it to suit your purposes.
 
-**Shout out** to @n1207n for patiently helping me get started with Flux.
+**Shout out** to [@n1207n](https://github.com/n1207n) for patiently helping me get started with Flux.
 
 # Documentation
 
