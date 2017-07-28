@@ -43,6 +43,8 @@ Plux may never be released for general usage, but you can feel free to use the c
 
 Plux API
 ========
+The Plux API represents everything you get when you include/import plux into your project.
+
 createStore 
 -----------
 `plux.createStore(storeName, function, [initialState])`
@@ -118,6 +120,8 @@ plux.getState("shared");
 
 Store API
 =========
+The Store API is used to interact with store objects returned from `plux.createStore`. While you cana do most of what you need to do through the plux API, this option is helpful when you want to be able to import stores or hold them in a variable. In addition, the Store API allows for advanced getters to be configured which provide ways to share common tasks when working with the store's state.
+
 name
 ----
 The string representation of name used to identify the store.
@@ -170,6 +174,8 @@ myStore.once("initialized", (state) => console.log(`The count has been initializ
 
 Subscription/Listener API
 =========================
+This API is returned when calling the subscribe or listen methods on plux or the store API. It's important to hold these references so that unecessary subscriptions are cleaned up. If you are using components, for example, it's important to unsubscribe from a store when a component is destroyed. Otherwise the risk of a memory leak is introduced.
+
 id
 --
 A unique integer used to identify the subscription.
@@ -186,6 +192,8 @@ The name of the store that the subscription/listener is associated with.
 
 Once API
 ========
+The once API is almost the same as the subscription/listener API. The difference is just in the semantics.
+
 cancel 
 ------
 `subscription.cancel()`
