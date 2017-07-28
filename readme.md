@@ -46,6 +46,7 @@ Plux API
 createStore 
 -----------
 `plux.createStore(storeName, function, [initialState])`
+
 Creates and registers a store with plux with the given `storeName` that will receive all actions that are executed. The function provided represents the action handler. It receives four arguments when an action is executed. `action`, `data`, `state`, and `event`.
 - `action` is a string representation of the action that's been executed and dispatched to the store.
 - `data` is argument that was included when the action was executed.
@@ -68,6 +69,7 @@ let sharedStore = plux.createStore("shared", actionHandler, { 'count': 0 });
 subscribe 
 ---------
 `plux.subscribe(storeName, function, [event])`
+
 Creates a subscription to the store with the given `storeName` which executes a given callback function when a change event occurs. If the optional `event` argument is provided, then the callback will be executed only when the given event is emitted from the store. The callback function will include the arguments `state` and `event`.
 - `state` represents a shallow copy of the state associated with the store.
 - `event` is a string representation of the event that was emitted from the event handler.
@@ -80,6 +82,7 @@ plux.subscribe("shared", (state) => console.log(`The count is now ${state.count}
 listen 
 ------
 `plux.listen(storeName, event, function)`
+
 Listen is almost identical to subscribe, but requires that an event be named for the subscription to be listened for. 
 ```javascript
 plux.listen("shared", "incremented", (state) => console.log(`The count has been incremented to ${state.count}.`));
@@ -88,6 +91,7 @@ plux.listen("shared", "incremented", (state) => console.log(`The count has been 
 once 
 ----
 `plux.once(storeName, event, function)`
+
 Once is almost identical to listen except that it will only execute the callback one time and then unsubscribe from the store. This is meant to be a more convenient way of managing subscriptions that only care about one specific instance of an event, such as when a configuration is loaded. It returns a variable of a subscription object.
 ```javascript
 plux.once("shared", "initialized", (state) => console.log(`The count has been initialized to ${state.count}.`));
@@ -96,6 +100,7 @@ plux.once("shared", "initialized", (state) => console.log(`The count has been in
 createAction 
 ------------
 `plux.createAction(actionName)`
+
 createAction will generate a function that will dispatch the `actionName` to all stores. The generated function accepts one optional argument that will be passed as `data` to each store's action handler.
 ```javascript
 let sendMessage = plux.createAction("message");
@@ -105,6 +110,7 @@ sendMessage("Hello!");
 getState 
 --------
 `plux.getState(storeName)`
+
 getState returns a shallow copy of the current state associated with a name matching `storeName`.
 ```javascript
 plux.getState("shared");
@@ -119,6 +125,7 @@ The string representation of name used to identify the store.
 subscribe 
 ---------
 `store.subscribe(function, [event])`
+
 Identical to `plux.subscribe` except that the store's name does not need to be provided.
 ```javascript
 myStore.subscribe((state) => console.log(`The count is now ${state.count}.`));
@@ -127,6 +134,7 @@ myStore.subscribe((state) => console.log(`The count is now ${state.count}.`));
 listen 
 ------
 `store.listen(event, function)`
+
 Identical to `plux.listen` except that the store's name does not need to be provided.
 ```javascript
 myStore.listen("incremented", (state) => console.log(`The count has been incremented to ${state.count}.`));
@@ -135,6 +143,7 @@ myStore.listen("incremented", (state) => console.log(`The count has been increme
 get 
 ---
 `store.get([getter])`
+
 If an optional getter is not specified, the current state for the given store will be returned. If the getter is specified, then the store will return data from the state using
 the specified getter.
 ```javascript
@@ -144,6 +153,7 @@ myStore.get('count');
 createGetter 
 ------------
 `store.createGetter(getterName, function)`
+
 Creates a getter on the store with the given name and executes the provided function when the getter is requested. The getter function will be provided with the store's `state`.
 ```javascript
 myStore.createGetter("count", (state) => state.count);
@@ -152,6 +162,7 @@ myStore.createGetter("count", (state) => state.count);
 once 
 ----
 `store.once(event, function)`
+
 Identical to `plux.once` except that the store's name does not need to be provided.
 ```javascript
 myStore.once("initialized", (state) => console.log(`The count has been initialized to ${state.count}.`));
@@ -166,6 +177,7 @@ A unique integer used to identify the subscription.
 unsubscribe 
 -----------
 `subscription.unsubscribe()`
+
 Removes the subscription from the store. It will no longer be notified of updates after unsubscribe has been called.
 
 store
