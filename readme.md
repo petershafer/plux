@@ -197,5 +197,6 @@ The once API is almost the same as the subscription/listener API. The difference
 cancel 
 ------
 `subscription.cancel()`
+
 Identical to `subscription.unsubscribe`.
 
