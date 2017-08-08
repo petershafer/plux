@@ -10,6 +10,7 @@
         function updateValues(count){
             $("#incCount").text(count);
         }
+        updateValues(plux.getState("shared").count);
         // Let's wire up the button to trigger an action to the dispatcher.
         $("#inc button").click(function(){
             actions.increment();
@@ -30,6 +31,7 @@
         function updateValues(count){
             $("#decCount").text(count);
         }
+        updateValues(plux.getState("shared").count);
         // Let's wire up the button to trigger an action to the dispatcher.
         $("#dec button").click(function(){
             actions.decrement();
@@ -45,5 +47,19 @@
         $("#reset").click(function(){
             actions.initialize();
         });
+    });
+})();
+
+// Reset Element
+(function(){
+    $(document).ready(function() {
+        const messages = [];
+        function log(msg) {
+            messages.unshift(msg);
+            $("#log").html(messages.join("<br/>"))
+        }
+        plux.listen("shared", "incremented", () => log("The count has been increased!"));
+        plux.listen("shared", "decremented", () => log("The count has been decreased!"));
+        plux.listen("shared", "initialized", () => log("The count has been initialized to 0."));
     });
 })();

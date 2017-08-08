@@ -3,9 +3,13 @@
 var expect = require('chai').expect;
 var plux = require('../src/plux');
 
+var i = 0;
+function generateName(){
+    return `store${i++}`;
+}
 
 describe(`Plux API`, function() {
-  it('should have four primary API methods', function() {
+  it('should have five primary API methods', function() {
     expect(plux).to.have.a.property('createStore');
     expect(plux.createStore).to.be.a("function");
     expect(plux).to.have.a.property('subscribe');
@@ -14,16 +18,43 @@ describe(`Plux API`, function() {
     expect(plux.createAction).to.be.a("function");
     expect(plux).to.have.a.property('getState');
     expect(plux.getState).to.be.a("function");
+    expect(plux).to.have.a.property('listen');
+    expect(plux.getState).to.be.a("function");
   });
 });
 
 describe(`createStore`, function() {
+  it('should return an API with 5 properties/methods and the name should match what was submitted', function() {
+    let actionHandler = (action, data, state, event) => {
+        switch(action){
+            case "anAction":
+                event();
+                break;
+        }
+    };
+    let sharedStore = plux.createStore("test-0727-5", actionHandler, {}); 
+    expect(sharedStore).to.have.a.property('name');
+    expect(sharedStore.name).to.be.a("string");
+    expect(sharedStore.name).to.equal("test-0727-5");
+    expect(sharedStore).to.have.a.property('subscribe');
+    expect(sharedStore.subscribe).to.be.a("function");
+    expect(sharedStore).to.have.a.property('listen');
+    expect(sharedStore.listen).to.be.a("function");
+    expect(sharedStore).to.have.a.property('get');
+    expect(sharedStore.get).to.be.a("function");
+    expect(sharedStore).to.have.a.property('createGetter');
+    expect(sharedStore.createGetter).to.be.a("function");
+    expect(sharedStore).to.have.a.property('once');
+    expect(sharedStore.once).to.be.a("function");
+  });
+
   it('should accept an action handler that is called for every action', function() {
     let handlerCalled = false;
-    let actionHandler = (action, data, state) => {
+    let actionHandler = (action, data, state, event) => {
         switch(action){
             case "anAction":
                 handlerCalled = true;
+                event();
                 break;
         }
     };
@@ -32,11 +63,12 @@ describe(`createStore`, function() {
     expect(handlerCalled).to.be.true;
   });
 
-  it('should allow for subscriptions to the new store', function() {
+  it('should allow for subscriptions to the new store, via plux', function() {
     let subscriptionCalled = 0;
-    let actionHandler = function(action, data, state){
+    let actionHandler = function(action, data, state, event){
         switch(action){
             case "anAction":
+                event();
                 break;
         }
     };
@@ -48,12 +80,66 @@ describe(`createStore`, function() {
     expect(subscriptionCalled).to.be.equal(1);
   });
 
-  it('should allow for state retrieval for the new store', function() {
+  it('should allow for subscriptions to the new store, via the store itself', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+            case "anAction":
+                event();
+                break;
+        }
+    };
+    let sharedStore = plux.createStore("test-0727-4", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    sharedStore.subscribe((state) => subscriptionCalled++);
+    expect(subscriptionCalled).to.be.equal(0);
+    anAction();
+    expect(subscriptionCalled).to.be.equal(1);
+  });
+
+  it('should allow for listeners to the new store, via the store itself', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+            case "anAction":
+                event();
+                break;
+        }
+    };
+    let sharedStore = plux.createStore("test-0727-8", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    sharedStore.listen("change", (state) => subscriptionCalled++);
+    expect(subscriptionCalled).to.be.equal(0);
+    anAction();
+    expect(subscriptionCalled).to.be.equal(1);
+  });
+
+  it('should allow for one-time listeners to the new store, via the store itself', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+            case "anAction":
+                event();
+                break;
+        }
+    };
+    let sharedStore = plux.createStore("test-0727-9", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    sharedStore.once("change", (state) => subscriptionCalled++);
+    expect(subscriptionCalled).to.be.equal(0);
+    anAction();
+    expect(subscriptionCalled).to.be.equal(1);
+    anAction();
+    expect(subscriptionCalled).to.be.equal(1);
+  });
+
+  it('should allow for state retrieval for the new store, via plux', function() {
     let subscriptionCalled = false;
-    let actionHandler = function(action, data, state){
+    let actionHandler = function(action, data, state, event){
         switch(action){
             case "anAction":
               state.hello = data;
+                event();
                 break;
         }
     };
@@ -66,14 +152,44 @@ describe(`createStore`, function() {
     expect(currentState.hello).to.be.equal("world");
   });
 
+  it('should return an object that includes a get function that returns the state if no arguments are included', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+            case "anAction":
+                event();
+                break;
+        }
+    };
+    let sharedStore = plux.createStore("test-0727-6", actionHandler, { 'hello': 'world' }); 
+    let myState = sharedStore.get();
+    expect(myState.hello).to.be.equal('world');
+  });
+
+  it('should return an object that includes a createGetter function that creates new getters on the store', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+            case "anAction":
+                event();
+                break;
+        }
+    };
+    let sharedStore = plux.createStore("test-0727-7", actionHandler, { 'hello': 'world' }); 
+    sharedStore.createGetter("test", (state) => state.hello);
+    let myValue = sharedStore.get("test");
+    expect(myValue).to.be.equal('world');
+  });
+
 });
 
 describe(`subscribe`, function() {
   it('should return an API with two properties and a method', function() {
     let subscriptionCalled = 0;
-    let actionHandler = function(action, data, state){
+    let actionHandler = function(action, data, state, event){
         switch(action){
             case "anAction":
+                event();
                 break;
         }
     };
@@ -90,9 +206,10 @@ describe(`subscribe`, function() {
 
   it('should accept a callback function that receives all state updates', function() {
     let subscriptionCalled = 0;
-    let actionHandler = function(action, data, state){
+    let actionHandler = function(action, data, state, event){
         switch(action){
             case "anAction":
+                event();
                 break;
         }
     };
@@ -104,63 +221,12 @@ describe(`subscribe`, function() {
     expect(subscriptionCalled).to.be.equal(1);
   });
 
-  it('should accept a filter function that is called before the subscriber function', function() {
-    let callCount = 0;
-    let subscriptionLastCall = null;
-    let filterLastCall = null;
-    let actionHandler = function(action, data, state){
-        switch(action){
-            case "anAction":
-                break;
-        }
-    };
-    plux.createStore("test-0716-1", actionHandler, { }); 
-    let anAction = plux.createAction("anAction");
-    plux.subscribe("test-0716-1", (state) => subscriptionLastCall = callCount++, (state) => { filterLastCall = callCount++; return state; });
-    anAction();
-    expect(filterLastCall).to.be.equal(0);
-    expect(subscriptionLastCall).to.be.equal(1);
-  });
-
-  it('should only call the subscriber function if the filter function returns a non-false value', function() {
-    let subscriberCalls = 0;
-    let filterCalls = 0;
-    let actionHandler = function(action, data, state){
-        switch(action){
-            case "anAction":
-                break;
-        }
-    };
-    plux.createStore("test-0716-2", actionHandler, { }); 
-    let anAction = plux.createAction("anAction");
-    plux.subscribe("test-0716-2", (state) => subscriberCalls++, (state) => ++filterCalls % 2 == 0 ? state : false );
-    anAction();
-    expect(filterCalls).to.be.equal(1);
-    expect(subscriberCalls).to.be.equal(0);
-    anAction();
-    expect(filterCalls).to.be.equal(2);
-    expect(subscriberCalls).to.be.equal(1);
-  });
-
-  it('should call the subscriber with the value returned by the filter function', function() {
-    let actionHandler = function(action, data, state){
-        switch(action){
-            case "anAction":
-                break;
-        }
-    };
-    plux.createStore("test-0716-3", actionHandler, { }); 
-    let anAction = plux.createAction("anAction");
-    const subscription = plux.subscribe("test-0716-3", (state) => expect(state.answer).to.be.equal(42), (state) => { return { 'answer': 42 } } );
-    anAction();
-    subscription.unsubscribe();
-  });
-
   it('should stop sending state updates to callback after unsubscribe is called', function() {
     let subscriptionCalled = 0;
-    let actionHandler = function(action, data, state){
+    let actionHandler = function(action, data, state, event){
         switch(action){
             case "anAction":
+                event();
                 break;
         }
     };
@@ -174,15 +240,77 @@ describe(`subscribe`, function() {
     expect(subscriptionCalled).to.be.equal(1);
   });
 
+  it('should allow you to subscribe to listen only for specific events', function() {
+    let subscriptionCalledA = 0;
+    let subscriptionCalledB = 0;
+    let altSubscriptionCalledA = 0;
+    let altSubscriptionCalledB = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+            case "anAction":
+                event("hello");
+                event("world");
+                break;
+        }
+    };
+    plux.createStore("test-0727-1", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    plux.subscribe("test-0727-1", (state) => subscriptionCalledA++, "hello");
+    plux.subscribe("test-0727-1", (state) => subscriptionCalledB++, "world");
+    plux.listen("test-0727-1", "hello", (state) => altSubscriptionCalledA++);
+    plux.listen("test-0727-1", "world", (state) => altSubscriptionCalledB++);
+    anAction();
+    // via plux.subscribe
+    expect(subscriptionCalledA).to.be.equal(1);
+    expect(subscriptionCalledB).to.be.equal(1);
+    // via plux.listen
+    expect(altSubscriptionCalledA).to.be.equal(1);
+    expect(altSubscriptionCalledB).to.be.equal(1);
+  });
+
+  it('should ensure that a change event always fires if a custom event fires', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+            case "anAction":
+                event("hello");
+                break;
+        }
+    };
+    plux.createStore("test-0727-2", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    plux.subscribe("test-0727-2", (state) => subscriptionCalled++, "change");
+    anAction();
+    expect(subscriptionCalled).to.be.equal(1);
+  });
+
+  it('should allow you to subscribe to all events', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+            case "anAction":
+                event("hello");
+                event("world");
+                break;
+        }
+    };
+    plux.createStore("test-0727-3", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    plux.subscribe("test-0727-3", (state) => subscriptionCalled++, "_all");
+    anAction();
+    expect(subscriptionCalled).to.be.equal(3);
+  });
+
 });
 
 describe(`createAction`, function() {
   it('should return a callable method that invokes the given action against all stores with specified data', function() {
     let subscriptionCalled = false;
-    let actionHandler = function(action, data, state){
+    let actionHandler = function(action, data, state, event){
         switch(action){
             case "anAction":
               state.hello = data;
+                event();
                 break;
         }
     };
@@ -200,10 +328,11 @@ describe(`createAction`, function() {
 
 describe(`getState`, function() {
   it('should return an object representative of the state held by the specified store', function() {
-    let actionHandler = function(action, data, state){
+    let actionHandler = function(action, data, state, event){
         switch(action){
             case "anAction":
               state.hello = data;
+                event();
                 break;
         }
     };
@@ -211,5 +340,67 @@ describe(`getState`, function() {
     let currentState = plux.getState("test-8");
     expect(currentState).to.be.ok;
     expect(currentState).to.be.a('object');
+  });
+});
+
+describe(`once`, function() {
+  it('should accept a callback function', function() {
+    expect(plux).to.have.a.property('once');
+    expect(plux.once).to.be.a("function");
+  });
+
+  it('should only ever execute the callback function once', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+            case "anAction":
+                event();
+                break;
+        }
+    };
+    plux.createStore("test-0718-1", actionHandler, { }); 
+    let anAction = plux.createAction("anAction");
+    plux.once("test-0718-1", "change", (state) => subscriptionCalled++);
+    expect(subscriptionCalled).to.be.equal(0);
+    anAction();
+    expect(subscriptionCalled).to.be.equal(1);
+    anAction();
+    expect(subscriptionCalled).to.be.equal(1);
+  });
+
+  it('should execute the callback function immediately when the specified event is emitted', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+          case "anAction":
+            state.count++;
+            event("incremented");
+            break;
+        }
+    };
+    plux.createStore("test-0718-2", actionHandler, { 'count': 1 }); 
+    let anAction = plux.createAction("anAction");
+    plux.once("test-0718-2", "incremented", (state) => subscriptionCalled++);
+    anAction();
+    expect(subscriptionCalled).to.be.equal(1);
+  });
+
+  it('should not execute the callback if it is canceled before the event is emitted', function() {
+    let subscriptionCalled = 0;
+    let actionHandler = function(action, data, state, event){
+        switch(action){
+          case "anAction":
+            state.count++;
+            event("incremented");
+            break;
+        }
+    };
+    plux.createStore("test-0718-4", actionHandler, { 'count': 0 }); 
+    let anAction = plux.createAction("anAction");
+    const waitForCount = plux.once("test-0718-4", "incremented", (state) => subscriptionCalled++);
+    expect(subscriptionCalled).to.be.equal(0);
+    waitForCount.cancel();
+    anAction();
+    expect(subscriptionCalled).to.be.equal(0);
   });
 });
